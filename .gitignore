@@ -1,0 +1,41 @@
+# --- secrets / per-user data (never publish) ---
+musify.db
+server.log
+*.bak
+
+# --- python / deps ---
+__pycache__/
+*.pyc
+node_modules/
+
+# --- huge UNUSED Spotify page mirrors (app has its own search/play; not needed) ---
+popular-in/
+playlist/
+artist/
+album/
+episode/
+section/
+show/
+collection/
+api-partner.spotify.com/
+gae2-spclient.spotify.com/
+spclient.wg.spotify.com/
+clienttoken.spotify.com/
+apresolve.spotify.com/
+cdn.cookielaw.org/
+www.google.com/
+www.googletagmanager.com/
+www.gstatic.com/
+daylist.spotifycdn.com/
+seed-mix-image.spotifycdn.com/
+newjams-images.scdn.co/
+mosaic.scdn.co/
+
+# --- unused large duplicate home pages ---
+intl-*.html
+recents.html
+download.html
+
+# --- dev helper scripts / fix scripts ---
+deep_fix.py
+fix_*.py

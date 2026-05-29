@@ -1,0 +1,1 @@
+chrome-extension://hnmpcagpplmpfojmgmnngilcnanddlhb/rulesets/scripting/procedural/annoyances-social.js

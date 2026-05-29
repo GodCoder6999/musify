@@ -1,0 +1,309 @@
+{
+  "header": {
+    "messageBars": [{
+      "messageHTML": "\u003ca href\u003d\"https://www.spotify.com/in-hi/\" class\u003d\"multi-language-link alert-link\"\u003eभारत (हिन्दी)\u003c/a\u003e",
+      "options": {
+        "type": "multiLanguage",
+        "trackingMode": "none",
+        "cookie": {
+          "name": "multiLanguage"
+        },
+        "multiLanguage": {
+          "updatePreferredLocaleUrl": "https://www.spotify.com/in-hi/update-preferred-locale/",
+          "updatePreferredLocaleLinkSelector": ".multi-language-link"
+        }
+      },
+      "dir": "ltr"
+    }],
+    "navigation": {
+      "brand": {
+        "href": "https://www.spotify.com/in-en/",
+        "alt": "Spotify - Home",
+        "dataAttributes": {
+          "data-tracking": "{\"category\": \"menu\", \"action\": \"spotify-logo\"}"
+        }
+      },
+      "user": {
+        "userIconAlt": "Profile"
+      },
+      "mobileMenu": {
+        "profileLink": {
+          "href": "https://www.spotify.com/in-en/account/overview/",
+          "alt": "Account"
+        }
+      },
+      "nav": [{
+        "type": "premiumDropdown",
+        "parameters": {
+          "text": "Premium plans",
+          "items": [{
+            "type": "linkAndContent",
+            "parameters": {
+              "href": "https://www.spotify.com/in-en/premium/#plans",
+              "text": "Premium Standard",
+              "dataAttributes": {
+                "data-ga-category": "menu",
+                "data-ga-action": "premium-individual"
+              },
+              "subText": "Your music. Your way. Everywhere - 1 account."
+            }
+          }, {
+            "type": "linkAndContent",
+            "parameters": {
+              "href": "https://www.spotify.com/in-en/platinum/#ref\u003dspotifycom_header_platinum",
+              "text": "Premium Platinum",
+              "dataAttributes": {
+                "data-ga-category": "menu",
+                "data-ga-action": "premium-platinum"
+              },
+              "subText": "Listen on a whole new level - Up to 3 accounts."
+            }
+          }, {
+            "type": "linkAndContent",
+            "parameters": {
+              "href": "https://www.spotify.com/in-en/student/#ref\u003dspotifycom_header_premium_student",
+              "text": "Premium Student",
+              "dataAttributes": {
+                "data-ga-category": "menu",
+                "data-ga-action": "premium-student"
+              },
+              "subText": "1 account - Discount for eligible students."
+            }
+          }],
+          "dataAttributes": {
+            "data-ga-category": "menu",
+            "data-ga-action": "premium"
+          }
+        }
+      }, {
+        "type": "link",
+        "parameters": {
+          "href": "https://support.spotify.com/",
+          "text": "Support",
+          "dataAttributes": {
+            "data-ga-category": "menu",
+            "data-ga-action": "help"
+          }
+        }
+      }, {
+        "type": "link",
+        "parameters": {
+          "href": "https://www.spotify.com/in-en/download/",
+          "text": "Download",
+          "dataAttributes": {
+            "data-ga-category": "menu",
+            "data-ga-action": "download",
+            "data-gtm-event-name": "download_spotify_button_clicked",
+            "data-tracking": "{\"category\": \"download\", \"action\": \"download start\", \"label\": \"download-navbar\"}"
+          }
+        }
+      }, {
+        "type": "sep"
+      }, {
+        "type": "profile",
+        "parameters": {
+          "text": "Profile",
+          "items": [{
+            "type": "link",
+            "parameters": {
+              "href": "https://www.spotify.com/in-en/account/overview/",
+              "text": "Account",
+              "dataAttributes": {
+                "data-tracking": "{\"category\": \"menu\", \"action\": \"account\"}"
+              }
+            }
+          }, {
+            "type": "link",
+            "parameters": {
+              "href": "https://www.spotify.com/in-en/logout/",
+              "text": "Log out",
+              "isSubtle": true,
+              "dataAttributes": {
+                "data-tracking": "{\"category\": \"menu\", \"action\": \"log-out\"}"
+              }
+            }
+          }]
+        }
+      }],
+      "skipLinkText": "Skip to content",
+      "desktopAriaLabel": "Desktop navigation",
+      "mobileAriaLabel": "Mobile navigation"
+    }
+  },
+  "footer": {
+    "brand": {
+      "href": "https://www.spotify.com/in-en/",
+      "alt": "Spotify - Home"
+    },
+    "topLinkGroups": [{
+      "title": "Company",
+      "links": [{
+        "title": "About",
+        "href": "https://www.spotify.com/in-en/about-us/contact/",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "about"
+        }
+      }, {
+        "title": "Jobs",
+        "href": "https://www.lifeatspotify.com/",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "jobs"
+        }
+      }, {
+        "title": "For the Record",
+        "href": "https://newsroom.spotify.com/",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "press"
+        }
+      }]
+    }, {
+      "title": "Communities",
+      "links": [{
+        "title": "For Artists",
+        "href": "https://artists.spotify.com/",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "artists"
+        }
+      }, {
+        "title": "Developers",
+        "href": "https://developer.spotify.com/",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "developers"
+        }
+      }, {
+        "title": "Advertising",
+        "href": "https://ads.spotify.com/",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "advertising"
+        }
+      }, {
+        "title": "Investors",
+        "href": "https://investors.spotify.com/",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "investors"
+        }
+      }, {
+        "title": "Vendors",
+        "href": "https://spotifyforvendors.com/",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "vendors"
+        }
+      }]
+    }, {
+      "title": "Useful links",
+      "links": [{
+        "title": "Support",
+        "href": "https://support.spotify.com/",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "help"
+        }
+      }, {
+        "title": "Web Player",
+        "href": "/open.spotify.com/",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "play"
+        }
+      }, {
+        "title": "Free Mobile App",
+        "href": "https://www.spotify.com/in-en/download/",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "free"
+        }
+      }, {
+        "title": "Popular by Country",
+        "href": "/popular-in/in",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "country-hub"
+        }
+      }, {
+        "title": "Import your music",
+        "href": "https://www.spotify.com/in-en/import-music/",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "import-music"
+        }
+      }]
+    }, {
+      "title": "Spotify Plans",
+      "links": [{
+        "title": "Premium Standard",
+        "href": "https://www.spotify.com/in-en/premium/#plans",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "premium-individual-footer"
+        }
+      }, {
+        "title": "Premium Platinum",
+        "href": "https://www.spotify.com/in-en/platinum/#ref\u003dspotifycom_footer_platinum",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "premium-platinum-footer"
+        }
+      }, {
+        "title": "Premium Student",
+        "href": "https://www.spotify.com/in-en/student/#ref\u003dspotifycom_footer_premium_student",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "premium-student-footer"
+        }
+      }, {
+        "title": "Spotify Free",
+        "href": "https://www.spotify.com/in-en/free/#ref\u003dspotifycom_footer_free",
+        "dataAttributes": {
+          "data-ga-category": "menu",
+          "data-ga-action": "premium-free-footer"
+        }
+      }]
+    }],
+    "socialLinks": [{
+      "name": "Instagram",
+      "icon": "instagram",
+      "href": "https://instagram.com/spotify"
+    }, {
+      "name": "Twitter",
+      "icon": "twitter",
+      "href": "https://twitter.com/spotify"
+    }, {
+      "name": "Facebook",
+      "icon": "facebook",
+      "href": "https://www.facebook.com/Spotify"
+    }],
+    "country": {
+      "name": "India (English)",
+      "flagCode": "in",
+      "href": "https://www.spotify.com/in-en/select-your-country-region/"
+    },
+    "bottomLinks": [{
+      "title": "Legal",
+      "href": "https://www.spotify.com/in-en/legal/"
+    }, {
+      "title": "Safety \u0026 Privacy Center",
+      "href": "https://www.spotify.com/in-en/safetyandprivacy/"
+    }, {
+      "title": "Privacy Policy",
+      "href": "https://www.spotify.com/in-en/legal/privacy-policy/"
+    }, {
+      "title": "Cookies",
+      "href": "https://www.spotify.com/in-en/legal/cookies-policy/"
+    }, {
+      "title": "About Ads",
+      "href": "https://www.spotify.com/in-en/legal/privacy-policy/#s3"
+    }, {
+      "title": "Accessibility",
+      "href": "https://www.spotify.com/in-en/accessibility/"
+    }],
+    "copyrightNotice": "© 2026 Spotify AB"
+  }
+}

@@ -1,0 +1,1 @@
+chrome-extension://hnmpcagpplmpfojmgmnngilcnanddlhb/rulesets/scripting/scriptlet/annoyances-cookies.trusted-set-local-storage-item.js

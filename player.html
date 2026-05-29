@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" class="encore-dark-theme">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Musify</title>
+<style>
+  :root{ --bg:#000; --panel:#121212; --elev:#181818; --elev2:#282828;
+         --text:#fff; --sub:#b3b3b3; --green:#1ed760; }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--text);
+       font-family:'SpotifyMixUI',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+       display:flex;flex-direction:column;height:100vh;overflow:hidden}
+  a{color:inherit}
+  .top{display:flex;align-items:center;gap:16px;padding:16px 24px;background:var(--panel)}
+  .logo{font-weight:800;font-size:22px;letter-spacing:-.5px}
+  .logo b{color:var(--green)}
+  .searchwrap{flex:1;max-width:480px;position:relative}
+  .search{width:100%;border:none;border-radius:999px;background:var(--elev2);
+          color:#fff;padding:12px 18px 12px 44px;font-size:14px;outline:none}
+  .search::placeholder{color:#9a9a9a}
+  .searchwrap svg{position:absolute;left:16px;top:11px;opacity:.7}
+  .badge{margin-left:auto;font-size:12px;color:var(--sub);background:var(--elev);
+         padding:6px 12px;border-radius:999px}
+  .main{flex:1;overflow-y:auto;padding:24px;background:linear-gradient(#1a1a1a,#121212 220px)}
+  .h{font-size:22px;font-weight:700;margin:4px 0 18px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:18px}
+  .card{background:var(--elev);border-radius:8px;padding:14px;cursor:pointer;
+        transition:background .2s;position:relative}
+  .card:hover{background:var(--elev2)}
+  .art{width:100%;aspect-ratio:1;border-radius:6px;object-fit:cover;background:#333;
+       box-shadow:0 8px 24px rgba(0,0,0,.5);margin-bottom:12px}
+  .ct{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ca{font-size:13px;color:var(--sub);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .play{position:absolute;right:22px;bottom:78px;width:48px;height:48px;border-radius:50%;
+        background:var(--green);color:#000;display:flex;align-items:center;justify-content:center;
+        opacity:0;transform:translateY(8px);transition:.2s;box-shadow:0 8px 16px rgba(0,0,0,.4)}
+  .card:hover .play{opacity:1;transform:translateY(0)}
+  .empty{color:var(--sub);font-size:15px;margin-top:40px;text-align:center}
+  /* now playing bar */
+  .bar{display:flex;align-items:center;gap:16px;padding:12px 18px;background:var(--panel);
+       border-top:1px solid #2a2a2a;height:80px}
+  .np{display:flex;align-items:center;gap:12px;width:30%;min-width:180px}
+  .np img{width:56px;height:56px;border-radius:4px;object-fit:cover;background:#333}
+  .np .ct{font-size:13px}.np .ca{font-size:12px;margin-top:2px}
+  .controls{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .btns{display:flex;align-items:center;gap:22px}
+  .pp{width:38px;height:38px;border-radius:50%;background:#fff;color:#000;border:none;
+      display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .icbtn{background:none;border:none;color:var(--sub);cursor:pointer;display:flex}
+  .icbtn:hover{color:#fff}
+  .seek{display:flex;align-items:center;gap:10px;width:100%;max-width:560px}
+  .seek input{flex:1;accent-color:var(--green)}
+  .t{font-size:11px;color:var(--sub);min-width:38px;text-align:center}
+  .right{width:30%;min-width:120px;display:flex;justify-content:flex-end;align-items:center;gap:10px}
+  .vol{width:110px;accent-color:#fff}
+  .spin{display:inline-block;width:16px;height:16px;border:2px solid #555;border-top-color:#fff;
+        border-radius:50%;animation:s 0.7s linear infinite}
+  @keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="logo">musi<b>fy</b></div>
+    <div class="searchwrap">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      <input class="search" id="q" placeholder="What do you want to play?" autocomplete="off">
+    </div>
+    <div class="badge" id="src">source: …</div>
+  </div>
+
+  <div class="main">
+    <div class="h" id="heading">Search for a song</div>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty">Type a song or artist above and hit Enter.</div>
+  </div>
+
+  <div class="bar">
+    <div class="np">
+      <img id="npImg" alt="">
+      <div style="min-width:0">
+        <div class="ct" id="npTitle">—</div>
+        <div class="ca" id="npArtist"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="btns">
+        <button class="pp" id="pp" title="Play/Pause">
+          <svg id="ppIcon" width="18" height="18" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+      </div>
+      <div class="seek">
+        <span class="t" id="cur">0:00</span>
+        <input type="range" id="seek" value="0" min="0" max="1000" step="1">
+        <span class="t" id="dur">0:00</span>
+      </div>
+    </div>
+    <div class="right">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#b3b3b3"><path d="M3 10v4h4l5 5V5L7 10H3z"/></svg>
+      <input class="vol" type="range" id="vol" min="0" max="1" step="0.01" value="1">
+    </div>
+  </div>
+
+  <audio id="audio"></audio>
+
+<script>
+const $ = id => document.getElementById(id);
+const audio = $('audio');
+let current = null;
+
+function fmt(s){ s=Math.floor(s||0); const m=Math.floor(s/60); const r=s%60; return m+':'+String(r).padStart(2,'0'); }
+
+async function doSearch(q){
+  $('heading').textContent = 'Results for "'+q+'"';
+  $('grid').innerHTML = '<div class="empty">Searching…</div>';
+  $('empty').style.display='none';
+  try{
+    const r = await fetch('/_m/search?q='+encodeURIComponent(q));
+    const data = await r.json();
+    if(data.error){ $('grid').innerHTML='<div class="empty">Error: '+data.error+'</div>'; return; }
+    if(!data.length){ $('grid').innerHTML='<div class="empty">No results.</div>'; return; }
+    $('src').textContent = 'source: '+(data[0].source||'?');
+    render(data);
+  }catch(e){ $('grid').innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+function render(items){
+  const g = $('grid'); g.innerHTML='';
+  for(const it of items){
+    const card = document.createElement('div'); card.className='card';
+    card.innerHTML =
+      '<img class="art" src="'+(it.cover||'')+'" onerror="this.style.visibility=\'hidden\'">'+
+      '<div class="play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg></div>'+
+      '<div class="ct">'+esc(it.title)+'</div><div class="ca">'+esc(it.artist)+'</div>';
+    card.onclick = ()=>playTrack(it);
+    g.appendChild(card);
+  }
+}
+function esc(s){ return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+async function playTrack(it){
+  current = it;
+  $('npImg').src = it.cover||'';
+  $('npTitle').textContent = it.title;
+  $('npArtist').textContent = it.artist + '  •  resolving…';
+  setPP(true);
+  const q = (it.title+' '+it.artist).trim();
+  // 302 -> direct YouTube audio
+  audio.src = '/_m/stream?q='+encodeURIComponent(q);
+  try{ await audio.play(); $('npArtist').textContent = it.artist; }
+  catch(e){ $('npArtist').textContent = it.artist+'  •  '+e.message; }
+}
+
+function setPP(playing){
+  $('ppIcon').innerHTML = playing
+    ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'
+    : '<path d="M8 5v14l11-7z"/>';
+}
+
+$('pp').onclick = ()=>{ if(audio.paused) audio.play(); else audio.pause(); };
+audio.onplay = ()=>setPP(true);
+audio.onpause = ()=>setPP(false);
+audio.ontimeupdate = ()=>{
+  $('cur').textContent = fmt(audio.currentTime);
+  if(audio.duration){ $('seek').value = (audio.currentTime/audio.duration)*1000; $('dur').textContent = fmt(audio.duration); }
+};
+$('seek').oninput = ()=>{ if(audio.duration) audio.currentTime = (+$('seek').value/1000)*audio.duration; };
+$('vol').oninput = ()=>{ audio.volume = +$('vol').value; };
+
+$('q').addEventListener('keydown', e=>{ if(e.key==='Enter' && e.target.value.trim()) doSearch(e.target.value.trim()); });
+</script>
+</body>
+</html>
