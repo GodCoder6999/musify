@@ -89,14 +89,19 @@
     g('msf-seek').oninput = function () { if (audio.duration) audio.currentTime = (+this.value / 1000) * audio.duration; };
     g('msf-vol').oninput = function () { audio.volume = +this.value; };
 
-    UI.play = function (it) {
+    var Q = [], QI = 0;
+    function _play() {
+      var it = Q[QI]; if (!it) return;
       g('msf-img').src = it.cover || ''; g('msf-t').textContent = it.title; g('msf-a').textContent = it.artist + '  •  resolving…';
       bar.classList.add('show');
       var bh = g('msf-bheart'); bh.className = 'msf-bheart' + (LIKED[it.id] ? ' on' : ''); bh.innerHTML = LIKED[it.id] ? HEART : '♡';
       bh.onclick = function () { toggleLike(it, bh); };
       audio.src = STREAM + encodeURIComponent((it.title + ' ' + it.artist).trim());
       audio.play().then(function () { g('msf-a').textContent = it.artist; }).catch(function (e) { g('msf-a').textContent = it.artist + '  •  ' + e.message; });
-    };
+    }
+    audio.onended = function () { if (QI < Q.length - 1) { QI++; _play(); } };
+    UI.play = function (it) { Q = [it]; QI = 0; _play(); };
+    UI.playList = function (list, idx) { Q = list.slice(); QI = idx || 0; _play(); };
     UI.render = function (items) {
       results.innerHTML = '';
       if (!items.length) { results.innerHTML = '<div class="msf-msg">No results.</div>'; return; }
@@ -156,6 +161,9 @@
     var parent = rows[0].parentElement;
     var box = parent.querySelector('#msf-lib');
     if (!box) { box = document.createElement('div'); box.id = 'msf-lib'; parent.appendChild(box); }
+    var sig = LIKED_TRACKS.length + '|' + PLAYLISTS.map(function (p) { return p.id + ':' + p.tracks.length; }).join(',');
+    if (box.__sig === sig && box.firstChild) return;   // unchanged -> skip rebuild (avoids click churn)
+    box.__sig = sig;
     var html = '<div class="msf-li" data-c="liked"><div class="ph liked">' + HEART + '</div>' +
       '<div style="min-width:0"><div class="nm">Liked Songs</div><div class="mt">Playlist • ' + LIKED_TRACKS.length + ' songs</div></div></div>';
     PLAYLISTS.forEach(function (p) {
@@ -170,11 +178,61 @@
   }
 
   function openCollection(cid) {
-    if (cid === 'liked') { UI.setTitle('Liked Songs'); UI.render(LIKED_TRACKS); UI.show(); }
+    var owner = USER ? USER.username : '';
+    if (cid === 'liked') renderPlaylistView('Liked Songs', owner, LIKED_TRACKS);
     else if (cid.indexOf('playlist:') === 0) {
       var id = cid.split(':')[1], pl = PLAYLISTS.filter(function (p) { return p.id === id; })[0];
-      UI.setTitle(pl ? pl.name : 'Playlist'); UI.render(pl ? pl.tracks : []); UI.show();
+      renderPlaylistView(pl ? pl.name : 'Playlist', owner, pl ? pl.tracks : []);
     }
+  }
+
+  // full-center playlist page (like the rip's playlist view)
+  var CLOCK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b3b3b3" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  function ensureView() {
+    var v = g('msf-view');
+    if (!v) {
+      v = document.createElement('div'); v.id = 'msf-view';
+      v.innerHTML = '<button class="back" title="Back">&lsaquo;</button><div class="scroll"></div>';
+      document.body.appendChild(v);
+      v.querySelector('.back').onclick = function () { v.classList.remove('open'); };
+      window.addEventListener('resize', function () { if (v.classList.contains('open')) positionView(v); });
+    }
+    return v;
+  }
+  function positionView(v) {
+    var sideEl = document.querySelector('[aria-label="Your Library"]');
+    var side = sideEl ? sideEl.getBoundingClientRect() : null;
+    var npb = document.querySelector('[data-testid="now-playing-bar"]');
+    var bottomY = npb ? npb.getBoundingClientRect().top : (window.innerHeight - 96);
+    var rp = [].slice.call(document.querySelectorAll('*')).filter(function (e) {
+      return /About the/.test(e.innerText || '') && e.getBoundingClientRect().left > window.innerWidth * 0.6;
+    })[0];
+    var rightX = rp ? rp.getBoundingClientRect().left : (window.innerWidth - 348);
+    var left = side ? side.right + 8 : 548;
+    v.style.left = left + 'px';
+    v.style.top = '76px';
+    v.style.width = Math.max(320, (rightX - 8) - left) + 'px';
+    v.style.height = (bottomY - 76 - 8) + 'px';
+  }
+  function renderPlaylistView(title, owner, tracks) {
+    var v = ensureView(), sc = v.querySelector('.scroll');
+    var cover = (tracks[0] && tracks[0].cover) || POOL[0] || '';
+    var dur = tracks.reduce(function (a, t) { return a + (t.duration || 0); }, 0);
+    var h = '<div class="hd"><img src="' + esc(cover) + '" onerror="this.style.visibility=\'hidden\'">' +
+      '<div><div class="lbl">Public Playlist</div><h1>' + esc(title) + '</h1>' +
+      '<div class="sub"><b>' + esc(owner) + '</b> • ' + tracks.length + ' songs' + (dur ? ', about ' + Math.round(dur / 60) + ' min' : '') + '</div></div></div>' +
+      '<div class="ctrls"><button class="bigplay"><svg width="24" height="24" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg></button></div>' +
+      '<div class="thead"><span class="ix">#</span><span>Title</span><span>Album</span><span class="du">' + CLOCK + '</span></div>';
+    if (!tracks.length) h += '<div class="empty">No songs yet — search and like songs (or add to this playlist) to fill it.</div>';
+    tracks.forEach(function (t, i) {
+      h += '<div class="trow" data-i="' + i + '"><span class="ix">' + (i + 1) + '</span>' +
+        '<span class="ti"><img src="' + esc(t.cover) + '" onerror="this.style.visibility=\'hidden\'"><span style="min-width:0"><span class="t">' + esc(t.title) + '</span><span class="a">' + esc(t.artist) + '</span></span></span>' +
+        '<span class="al">' + esc(t.album || '') + '</span><span class="du">' + fmt(t.duration || 0) + '</span></div>';
+    });
+    sc.innerHTML = h; sc.scrollTop = 0;
+    sc.querySelector('.bigplay').onclick = function () { if (tracks.length) UI.playList(tracks, 0); };
+    [].forEach.call(sc.querySelectorAll('.trow'), function (row) { var i = +row.getAttribute('data-i'); row.onclick = function () { UI.playList(tracks, i); }; });
+    positionView(v); v.classList.add('open');
   }
 
   function hookCreate() {
