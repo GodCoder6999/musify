@@ -77,10 +77,16 @@
     var bar = document.createElement('div'); bar.id = 'msf-bar';
     bar.innerHTML =
       '<div class="np"><img id="msf-img" alt=""><div style="min-width:0"><div class="t" id="msf-t">—</div><div class="a" id="msf-a"></div></div><button class="msf-bheart" id="msf-bheart" title="Like">♡</button></div>' +
-      '<div class="ctr"><button class="pp" id="msf-pp"><svg id="msf-ppi" width="18" height="18" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg></button>' +
+      '<div class="ctr"><div class="btns">' +
+      '<button class="ic" id="msf-sh" title="Shuffle"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M14 4h6v6h-2V7.4l-9.3 9.3-1.4-1.4L16.6 6H14zM4 6h4l3 3-1.5 1.5L7 8H4zm13.5 8.5L20 17v-3h-2v.6l-1.5-1.5zM4 16h3l9.3-9.3 1.4 1.4L8 18H4z"/></svg></button>' +
+      '<button class="ic" id="msf-pv" title="Previous"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M7 6h2v12H7zM20 6v12l-9-6z"/></svg></button>' +
+      '<button class="pp" id="msf-pp"><svg id="msf-ppi" width="18" height="18" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg></button>' +
+      '<button class="ic" id="msf-nx" title="Next"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M15 6h2v12h-2zM4 6l9 6-9 6z"/></svg></button>' +
+      '<button class="ic" id="msf-rp" title="Repeat"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2z"/></svg></button></div>' +
       '<div class="seek"><span class="tm" id="msf-cur">0:00</span><input type="range" id="msf-seek" min="0" max="1000" value="0"><span class="tm" id="msf-dur">0:00</span></div></div>' +
       '<div class="vol"><svg width="16" height="16" viewBox="0 0 24 24" fill="#b3b3b3"><path d="M3 10v4h4l5 5V5L7 10H3z"/></svg><input type="range" id="msf-vol" min="0" max="1" step="0.01" value="1"></div>';
     document.body.appendChild(bar);
+    bar.classList.add('show');   // always visible, covers the rip's dead player bar
 
     g('msf-pp').onclick = function () { audio.paused ? audio.play() : audio.pause(); };
     function setPP(p) { g('msf-ppi').innerHTML = p ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>' : '<path d="M8 5v14l11-7z"/>'; }
@@ -99,7 +105,14 @@
       audio.src = STREAM + encodeURIComponent((it.title + ' ' + it.artist).trim());
       audio.play().then(function () { g('msf-a').textContent = it.artist; }).catch(function (e) { g('msf-a').textContent = it.artist + '  •  ' + e.message; });
     }
-    audio.onended = function () { if (QI < Q.length - 1) { QI++; _play(); } };
+    var shuffle = false, repeat = false;
+    function nextTrack() { if (!Q.length) return; QI = shuffle ? Math.floor(Math.random() * Q.length) : (QI + 1) % Q.length; _play(); }
+    function prevTrack() { if (audio.currentTime > 3) { audio.currentTime = 0; return; } QI = (QI - 1 + Q.length) % Q.length; _play(); }
+    audio.onended = function () { if (repeat) { audio.currentTime = 0; audio.play(); } else if (Q.length > 1) nextTrack(); };
+    g('msf-nx').onclick = nextTrack;
+    g('msf-pv').onclick = prevTrack;
+    g('msf-sh').onclick = function () { shuffle = !shuffle; g('msf-sh').classList.toggle('on', shuffle); };
+    g('msf-rp').onclick = function () { repeat = !repeat; g('msf-rp').classList.toggle('on', repeat); };
     UI.play = function (it) { Q = [it]; QI = 0; _play(); };
     UI.playList = function (list, idx) { Q = list.slice(); QI = idx || 0; _play(); };
     UI.render = function (items) {
@@ -272,11 +285,12 @@
     var tiles = [].slice.call(grid.children);
     var items = [{ name: 'Liked Songs', cid: 'liked' }].concat(PLAYLISTS.map(function (p) { return { name: p.name, cid: 'playlist:' + p.id }; }));
     tiles.forEach(function (tile, i) {
-      if (i >= items.length) { tile.style.display = 'none'; return; }
+      if (i >= items.length) { tile.style.display = 'none'; tile.__msfItem = null; return; }
       tile.style.display = '';
+      tile.__msfItem = items[i];                 // live ref (fixes stale-closure: some tiles not opening)
       var leaf = [].slice.call(tile.querySelectorAll('*')).filter(function (e) { return e.children.length === 0 && (e.innerText || '').trim().length > 0; })[0];
       if (leaf && leaf.textContent !== items[i].name) leaf.textContent = items[i].name;
-      if (!tile.__msfQ) { tile.__msfQ = true; tile.addEventListener('click', function (e) { e.preventDefault(); e.stopImmediatePropagation(); openCollection(items[i].cid); }, true); }
+      if (!tile.__msfQ) { tile.__msfQ = true; tile.addEventListener('click', function (e) { e.preventDefault(); e.stopImmediatePropagation(); if (tile.__msfItem) openCollection(tile.__msfItem.cid); }, true); }
     });
   }
   function replaceAnirban() {
